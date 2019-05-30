@@ -1,16 +1,36 @@
-# connectivity_demo
+# Flutter Demo - Connectivity Plugin Demo
 
-A new Flutter project.
+![Flutter Demo - Connectivity Plugin Demo](demo/demo.gif)
 
-## Getting Started
+This a simple demos for using the [Connectivity Plugin Demo](https://pub.dev/packages/connectivity).
 
-This project is a starting point for a Flutter application.
+The demos taps into the `Stream<ConnectivityResult>` provided the plugin and rebuilding the widget using the `StreamBuilder` everytime the connectivity status changes.
 
-A few resources to get you started if this is your first Flutter project:
+```dart
+final Stream<ConnectivityResult> subscription = Connectivity().onConnectivityChanged;
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+And then:
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+```dart
+StreamBuilder(
+    stream: subscription,
+    builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
+        switch (snapshot.data) {
+            case ConnectivityResult.mobile:
+            // connection on mobile
+            break;
+            case ConnectivityResult.wifi:
+            // connection on wifi
+            break;
+            default:
+            // no network connection
+        }
+    },
+)
+
+```
+
+Please note the following:
+
+> "NB: Note that on Android, this does not guarantee connection to Internet. For instance, the app might have wifi access but it might be a VPN or a hotel WiFi with no access."
