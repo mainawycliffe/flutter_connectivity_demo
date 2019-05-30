@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:connectivity/connectivity.dart';
 
 void main() => runApp(MyApp());
 
@@ -17,40 +19,78 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+  final Stream<ConnectivityResult> subscription =
+      Connectivity().onConnectivityChanged;
 
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Icons.wifi,
-              size: 70,
-              color: Colors.red,
-            ),
-            SizedBox(
-              width: 50,
-            ),
-            Icon(
-              Icons.network_cell,
-              color: Colors.red,
-              size: 70,
-            ),
-          ],
+        child: StreamBuilder(
+          stream: subscription,
+          builder: (BuildContext context,
+              AsyncSnapshot<ConnectivityResult> snapshot) {
+            TextStyle style = Theme.of(context).textTheme.display3;
+            const double iconSize = 200;
+
+            switch (snapshot.data) {
+              case ConnectivityResult.mobile:
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.network_cell,
+                      size: iconSize,
+                      color: Colors.red,
+                    ),
+                    Text(
+                      'Mobile Data',
+                      style: style,
+                    )
+                  ],
+                );
+                break;
+              case ConnectivityResult.wifi:
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.network_wifi,
+                      size: iconSize,
+                      color: Colors.red,
+                    ),
+                    Text(
+                      'WiFi',
+                      style: style,
+                    )
+                  ],
+                );
+                break;
+              default:
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.signal_cellular_off,
+                      size: iconSize,
+                      color: Colors.grey,
+                    ),
+                    Text(
+                      'No Network!',
+                      style: style,
+                    )
+                  ],
+                );
+            }
+          },
         ),
       ),
     );
